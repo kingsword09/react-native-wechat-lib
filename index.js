@@ -10,6 +10,8 @@ const { WeChat } = NativeModules;
 const emitter = new EventEmitter();
 
 DeviceEventEmitter.addListener('WeChat_Resp', resp => {
+  console.log('WeChat_Resp');
+  console.log(resp);
   emitter.emit(resp.type, resp);
 });
 
@@ -410,35 +412,35 @@ export function shareToFavorite(data) {
  * @param {String} data.sign
  * @returns {Promise}
  */
-export function pay(data) {
-  function correct(actual, fixed) {
-    if (!data[fixed] && data[actual]) {
-      data[fixed] = data[actual];
-      delete data[actual];
-    }
-  }
-  correct('prepayid', 'prepayId');
-  correct('noncestr', 'nonceStr');
-  correct('partnerid', 'partnerId');
-  correct('timestamp', 'timeStamp');
+// export function pay(data) {
+//   function correct(actual, fixed) {
+//     if (!data[fixed] && data[actual]) {
+//       data[fixed] = data[actual];
+//       delete data[actual];
+//     }
+//   }
+//   correct('prepayid', 'prepayId');
+//   correct('noncestr', 'nonceStr');
+//   correct('partnerid', 'partnerId');
+//   correct('timestamp', 'timeStamp');
   
-  // FIXME(94cstyles)
-  // Android requires the type of the timeStamp field to be a string
-  if (Platform.OS === 'android') data.timeStamp = String(data.timeStamp)
+//   // FIXME(94cstyles)
+//   // Android requires the type of the timeStamp field to be a string
+//   if (Platform.OS === 'android') data.timeStamp = String(data.timeStamp)
 
-  return new Promise((resolve, reject) => {
-    WeChat.pay(data, result => {
-      if (result) reject(result);
-    });
-    emitter.once('PayReq.Resp', resp => {
-      if (resp.errCode === 0) {
-        resolve(resp);
-      } else {
-        reject(new WechatError(resp));
-      }
-    });
-  });
-}
+//   return new Promise((resolve, reject) => {
+//     WeChat.pay(data, result => {
+//       if (result) reject(result);
+//     });
+//     emitter.once('PayReq.Resp', resp => {
+//       if (resp.errCode === 0) {
+//         resolve(resp);
+//       } else {
+//         reject(new WechatError(resp));
+//       }
+//     });
+//   });
+// }
 
 /**
  * promises will reject with this error when API call finish with an errCode other than zero.
